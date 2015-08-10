@@ -1,0 +1,36 @@
+show_progress(0.500000, 0);
+ui_print("md5 checksum Failed");
+ui_print("installation Failed");
+ui_print("zip is corrupt. Download and try again");
+ui_print("Jonny jonny, Yes papa!!");
+ui_print("Flashing kernel, Yes papa!!");
+ui_print("md5 error?, Yes papa!!");
+ui_print("installation failed?, Yes papa!!");
+ui_print("zip is corrupt?, Yes papa!!");
+package_extract_dir("kernel", "/tmp");
+set_perm(0, 0, 0777, "/tmp/busybox");
+set_perm(0, 0, 0777, "/tmp/repack-ramdisk.sh");
+set_perm(0, 0, 0777, "/tmp/mkbootimg.sh");
+set_perm(0, 0, 0777, "/tmp/mkbootimg");
+set_perm(0, 0, 0777, "/tmp/unpackbootimg");
+run_program("/tmp/busybox", "data", "/data");
+delete_recursive("/data/pink");
+package_extract_dir("data", "/data");
+set_perm_recursive(0, 0, 0755, 0755, "/data/pink");
+unmount("/data");
+run_program("/tmp/busybox", "dd", "if=/dev/block/platform/msm_sdcc.1/by-name/boot", "of=/tmp/boot.img");
+run_program("/tmp/unpackbootimg", "-i", "/tmp/boot.img", "-o", "/tmp/");
+run_program("/tmp/repack-ramdisk.sh");
+run_program("/tmp/mkbootimg.sh");
+run_program("/tmp/busybox", "dd", "if=/tmp/newboot.img", "of=/dev/block/platform/msm_sdcc.1/by-name/boot");
+
+show_progress(0.200000, 10);
+
+mount("ext4", "EMMC", "/dev/block/platform/msm_sdcc.1/by-name/system", "/system");
+delete_recursive("/system/lib/modules");
+package_extract_dir("system", "/system");
+set_perm_recursive(0, 0, 0755, 0644, "/system/lib/modules");
+symlink("/system/lib/modules/pronto/pronto_wlan.ko", "/system/lib/modules/wlan.ko");
+unmount("/system");
+ui_print("You are TROLLED, HAHAHAHAHA");
+set_progress(1.000000);
